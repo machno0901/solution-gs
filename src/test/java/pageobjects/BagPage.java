@@ -13,9 +13,15 @@ public class BagPage {
 
   private static final By BAG_PAGE = By.cssSelector("[data-locator-id='miniBag-component']");
   private static final By BAG_ITEMS = By.cssSelector("[data-locator-id^='miniBag-miniBagItem']");
+  private static final By REMOVE_BUTTON = By.cssSelector("[data-locator-id^='miniBag-remove']");
+  private static final By PARAGRAPH_NO_PRODUCTS = By.cssSelector("[class^='empty-view_subtitle']");
+  private static final By HEADER_BAG_IS_EMPTY = By.cssSelector("[class^='empty-view_title']");
+  private static final By QUANTITY_DROPDOWN = By.cssSelector("[data-locator-id^='miniBag-quantityDropdown']");
+  private static final By TOTAL_PRICE = By.cssSelector("[data-locator-id^='miniBag-totalValue']");
   public static final String GS_LOCATOR_ATTRIBUTE = "data-locator-id";
+  private int productQuantity;
 
-  public BagPage() {
+  public void waitForBagPage() {
     getCommands().waitForAndGetVisibleElementLocated(BAG_PAGE);
   }
 
@@ -31,5 +37,28 @@ public class BagPage {
 
   private long getVariantId(WebElement bagItem) {
     return extractVariantIDFromString(getCommands().getAttributeFromElement(bagItem, GS_LOCATOR_ATTRIBUTE));
+  }
+
+  public void removeProduct() {
+      getCommands().waitForAndClickOnElementLocated(REMOVE_BUTTON);
+  }
+
+  public void verifyBagIsEmpty() {
+    getCommands().waitForElementToDisappear(BAG_ITEMS);
+    getCommands().waitForAndGetVisibleElementLocated(PARAGRAPH_NO_PRODUCTS);
+    getCommands().waitForAndGetVisibleElementLocated(HEADER_BAG_IS_EMPTY);
+  }
+
+  public void setQuantity(int expectedQuantity) {
+    productQuantity = expectedQuantity;
+    getCommands().selectFromDropdown(QUANTITY_DROPDOWN, String.valueOf(expectedQuantity));
+  }
+
+  public void waitUntilTotalPriceIs(String expectedPrice) {
+    getCommands().waitForTextToBeEqual(TOTAL_PRICE, expectedPrice);
+  }
+
+  public int getProductQuantity() {
+    return productQuantity;
   }
 }

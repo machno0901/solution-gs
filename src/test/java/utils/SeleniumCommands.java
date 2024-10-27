@@ -3,8 +3,7 @@ package utils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import stepdefs.hooks.Hooks;
 
 import java.time.Duration;
@@ -27,6 +26,10 @@ public class SeleniumCommands {
     return until(ExpectedConditions.visibilityOfElementLocated(selector));
   }
 
+  public void waitForElementToDisappear(By selector) {
+    until(ExpectedConditions.invisibilityOfElementLocated(selector));
+  }
+
   public List<WebElement> waitForAndGetAllVisibleElementsLocated(By selector) {
     return until(ExpectedConditions.visibilityOfAllElementsLocatedBy(selector));
   }
@@ -37,6 +40,24 @@ public class SeleniumCommands {
 
   public String getAttributeFromElement(WebElement element, String attribute) {
     return element.getAttribute(attribute);
+  }
+
+  public void selectFromDropdown(By locator, String value) {
+    WebElement selectElement = Hooks.getDriver().findElement(locator);
+    Select select = new Select(selectElement);
+    select.selectByValue(value);
+  }
+
+  public void waitForTextToBeEqual(By locator, String expectedText) {
+    Wait<WebDriver> wait = new FluentWait<>(Hooks.getDriver())
+            .withTimeout(Duration.ofSeconds(30))
+            .pollingEvery(Duration.ofSeconds(1))
+            .ignoring(Exception.class);
+
+    wait.until(driver -> {
+      WebElement element = driver.findElement(locator);
+      return element.getText().equals(expectedText);
+    });
   }
 
   private WebDriverWait defaultWait() {
